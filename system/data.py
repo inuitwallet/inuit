@@ -7,7 +7,7 @@ import system.db as db
 def exportAlts():
 	conn = db.open()
 	c = conn.cursor()
-	c.execute('select c.currency, c.longName, v.version from inuit_currencies as c inner join inuit_versions as v on c.version = v.id;')
+	c.execute('select c.currency, c.longName, v.version from inuit_currencies as c inner join inuit_versions as v on c.version = v.id order by c.longName;')
 	currencies = c.fetchall()
 	db.close(conn)
 	currs = []
