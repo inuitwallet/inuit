@@ -92,7 +92,7 @@ def generate(cur, bip=False):
 	db.close(conn)
 	print('')
 	print(version[4] + ' Address : ' + publicAddress)
-	return	
+	return privK, publicAddress
 
 	
 def dumpPrivKey(address):

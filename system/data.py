@@ -61,6 +61,7 @@ def genAll(bip=False):
 	c.execute('select currency from inuit_currencies order by currency;')
 	currencies = c.fetchall()
 	for cur in currencies:
+		print(str(cur[0]))
 		c.execute('select v.version,v.prefix,v.length,c.id,c.longName from inuit_versions as v inner join inuit_currencies as c on c.version = v.id where c.currency=?;', (cur[0].upper(),))
 		version = c.fetchone()
 		if version is None:
@@ -74,8 +75,8 @@ def genAll(bip=False):
 		WIF = address.privateKey2Wif(privateKey, version[0], prefix,  version[2])
 		publicAddress = address.publicKey2Address(address.privateKey2PublicKey(privateKey), version[0], prefix,  version[2])
 		if bip is True:
-			BIP = bip38.encrypt(privK256, publicAddress, 'biptest', 1)
-			privK, addresshash = bip38.decrypt(BIP, 'biptest', 1)
+			BIP = bip38.encrypt(privK256, publicAddress, 'encryptKnownTest', 8)
+			privK, addresshash = bip38.decrypt(BIP, 'encryptKnownTest', 8)
 			#decode the privK from base 256
 			privK = enc.decode(privK, 256)
 			#hash the address to check the decryption
@@ -88,7 +89,7 @@ def genAll(bip=False):
 				fail = True
 				reason = 'Private Keys don\'t match'
 			BIPWIF =  address.privateKey2Wif(privK, version[0], prefix,  version[2])
-		with open('allKeys', 'a') as outfile:
+		with open('allKeys.txt', 'a') as outfile:
 			outfile.write('####### ' + cur[0].upper() + ' - ' + version[4] + ' #######\n')
 			outfile.write('Address = ' + publicAddress + '\n')
 			outfile.write('WIF     = ' + WIF + '\n')
@@ -101,4 +102,4 @@ def genAll(bip=False):
 			outfile.write('\n')
 		outfile.close()
 	db.close(conn)
-	return True
+	return

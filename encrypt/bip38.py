@@ -23,7 +23,7 @@ def encrypt(privK, address, passphrase, p):
 	#	 a.  Parameters: passphrase is the passphrase itself encoded in UTF-8.
 	#		 addresshash came from the earlier step, n=16384, r=8, p=8, length=64
 	#		 (n, r, p are provisional and subject to consensus)
-	key = scrypt.scrypt(passphrase, addresshash, 16384, 8, p)
+	key = scrypt.hash(passphrase, addresshash, 16384, 8, p)
 	
 	#Let's split the resulting 64 bytes in half, and call them derivedhalf1 and derivedhalf2.
 	derivedhalf1 = key[0:32]
@@ -57,7 +57,7 @@ def decrypt(encrypted_privkey, passphrase, p):
 	d = d[4:-4]	
 	
 	#3. Derive decryption key for seedb using scrypt with passpoint, addresshash, and ownersalt
-	key = scrypt.scrypt(passphrase,addresshash, 16384, 8, p)
+	key = scrypt.hash(passphrase,addresshash, 16384, 8, p)
 	derivedhalf1 = key[0:32]
 	derivedhalf2 = key[32:64]
 	encryptedhalf1 = d[0:16]
