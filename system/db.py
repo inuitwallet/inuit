@@ -3,14 +3,23 @@ import sqlite3
 
 
 def open():
+	"""
+	open the database connection
+	"""
 	return sqlite3.connect('igloo.dat')
 	
 def close(conn):
+	"""
+	close the given connection
+	"""
 	conn.commit()
 	conn.close()
 	return True
 	
 def testDec():
+	"""
+	test the encryption state of the database file
+	"""
 	if os.path.isfile('igloo.dat'):
 		conn = open()
 		c = conn.cursor()

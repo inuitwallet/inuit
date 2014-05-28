@@ -1,9 +1,10 @@
 import sqlite3
-import encrypt.database as database
 import io.inp as inp
 
 def buildDB():
-
+	"""
+	build the database on first run
+	"""
 	conn = sqlite3.connect('igloo.dat')
 	c = conn.cursor()
 
@@ -169,6 +170,9 @@ def buildDB():
 	return
 
 def setPwd(message=0):
+	"""
+	prompt the user to set the system password with appropriate warning
+	"""
 	if message == 0:
 		print('Welcome to inuit')
 		print('you will be asked to provide a password to secure the system.')

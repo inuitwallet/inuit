@@ -1,7 +1,9 @@
-import sqlite3
 import system.db as db
 
 def base58_to_hex(b58str):
+	"""
+	convert a base58 encoded string to hex
+	"""
 	n = 0
 	b58_digits = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 	for s in b58str:
@@ -11,6 +13,9 @@ def base58_to_hex(b58str):
 	return hex(n)
   	
 def scan(privK, minimum=0):
+	"""
+	return the version of a currency which is encoded in the private key
+	"""
 	hexK = base58_to_hex(privK)
 	prefix = hexK[0:3]
 	i = 3
@@ -20,6 +25,10 @@ def scan(privK, minimum=0):
 	return int(prefix, 16)-minimum
   	
 def addAlt(cur):
+	"""
+	add an alt currency to the inuit system.
+	check if it already exists and prompt for a version number or private key if it doesn't
+	"""
 	conn = db.open()
 	c = conn.cursor()
 	c.execute('select id from inuit_currencies where currency=?;', (cur.upper(),))
@@ -66,6 +75,9 @@ def addAlt(cur):
 	return
 	
 def editAlt(cur):
+	"""
+	edit a currency that is already in the system
+	"""
 	conn = db.open()
 	c = conn.cursor()
 	c.execute('select c.id,c.currency,c.longName,v.version from inuit_currencies as c inner join inuit_versions as v on c.version = v.id where c.currency=?;', (cur.upper(), ))

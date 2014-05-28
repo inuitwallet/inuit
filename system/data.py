@@ -1,10 +1,13 @@
 import json
 import os.path
-import sqlite3
 import system.db as db
 
 
 def exportAlts():
+	"""
+	export all currencies in the inuit database to a currencies.json file
+	this will overwrite any existing file
+	"""
 	conn = db.open()
 	c = conn.cursor()
 	c.execute('select c.currency, c.longName, v.version from inuit_currencies as c inner join inuit_versions as v on c.version = v.id order by c.longName;')
@@ -19,6 +22,11 @@ def exportAlts():
 	return True
 
 def importAlts():
+	"""
+	Update the currency information in the inuit database with data form a currencies.json file in the inuit root directory.
+	No currencies will be removed from the database if they don;t exist in the file
+	currency data will be overwritten with the file data
+	"""
 	if not os.path.isfile('currencies.json'):
 		print('no currencies.json file in your inuit directory')
 		return False
@@ -46,6 +54,14 @@ def importAlts():
 #This function is a debugging function.
 #It allows me to generate an address and private key for each currency to test the import into their wallets.
 def genAll(bip=False):
+	"""
+	unit test function
+	generate an address and WIF private key for every currency listed in the inuit system
+	data is saved to a file named 'allKeys'
+	the private keys can be used for import into currency QT wallets to test compatibility
+
+	set bip to True to BIP38 encrypt the private keys and test the encryption too
+	"""
 	import random
 	import num.rand as rand
 	import system.address as address

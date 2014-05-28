@@ -2,7 +2,6 @@ import hashlib
 
 import io.inp as inp
 import io.get as get
-import io.out as out
 import encrypt.bip38 as bip38
 import num.elip as elip
 import num.enc as enc
@@ -11,24 +10,30 @@ import system.db as db
 import random
 
 def privateKey2Wif(privateKey, version=0, prefix=1, length=0):
+	"""
+	convert a private key to WIF format
+	"""
 	return base58Encode(enc.encode(privateKey, 256, 32) + '\x01', (128+int(version)), prefix, length)
 
 
 def privateKey2PublicKey(priv):
-	""" integer 256 bit ECC private key to hexstring compressed public key
+	"""
+	integer 256 bit ECC private key to hexstring compressed public key
 	"""
 	pub = elip.base10_multiply(elip.G, priv)
 	return '0' + str(2 + (pub[1] % 2)) + enc.encode(pub[0], 16, 64)
 
 
 def publicKey2Address(publicKey, version=0, prefix=1, length=0):
-	""" Compressed ECC public key hex to address
+	"""
+	Compressed ECC public key hex to address
 	"""
 	return base58Encode(hashlib.new('ripemd160', hashlib.sha256(publicKey.decode('hex')).digest()).digest(), (0+version), prefix, length)
 
 
 def base58Encode(r160, magicbyte=0, prefix=1, length=0):
-	""" Base58 encoding w leading zero compact
+	"""
+	Base58 encoding w leading zero compact
 	"""
 	from re import match as re_match
 	inp_fmtd = chr(int(magicbyte if magicbyte < 255 else 255)) + r160
@@ -38,10 +43,10 @@ def base58Encode(r160, magicbyte=0, prefix=1, length=0):
 
 
 def generate(cur, bip=False):
-	'''
+	"""
 		public and private key generator.
 		optional BIP0038 encryption
-	'''
+	"""
 	#check that the given currency is in the system
 	conn = db.open()
 	c = conn.cursor()
@@ -60,7 +65,7 @@ def generate(cur, bip=False):
 	publicAddress = publicKey2Address(privateKey2PublicKey(privateKey), version[0], prefix,  version[2])
 	#optional BIP0038 encryption
 	get.flushKeybuffer(get._Getch())
-	encrypt = raw_input('Do you want to BIP0038 encrypt your key? (n) ').lower().strip()
+	encrypt = 'y'
 	if encrypt == 'y':
 		bipPass1 = 'pass1' 
 		bipPass2 = 'pass2'
@@ -72,10 +77,11 @@ def generate(cur, bip=False):
 			elif len(bipPass1) < 1:
 				print('No passphrase was entered!')
 		reminder = raw_input('Enter an optional reminder for your password : ').strip()
-		print('')
-		print('Enter the number of rounds of encryption.')
-		p = raw_input('A smaller number means quicker but less secure. (8) : ').strip()
-		p = 8 if p == '' else int(p)
+		#print('')
+		#print('Enter the number of rounds of encryption.')
+		#p = raw_input('A smaller number means quicker but less secure. (8) : ').strip()
+		#p = 8 if p == '' else int(p)
+		p = 8
 		privK = bip38.encrypt(privK256, publicAddress, bipPass1, p)
 		isBip = True
 	else:
@@ -96,11 +102,11 @@ def generate(cur, bip=False):
 
 	
 def dumpPrivKey(address):
-	'''
+	"""
 		retrieve private key from database for given address
 		option to decrypt BIP0038 encrypted keys
 		display as base58 and WIF
-	'''
+	"""
 	conn = db.open()
 	c = conn.cursor()
 	#get the needed data from the database
@@ -121,8 +127,8 @@ def dumpPrivKey(address):
 	privK = privData[1].decode('base64', 'strict')
 	#ask if the user wants to decrypt a bip encrypted key
 	if isBip:
-		print('The private key found is BIP0038 encrypted.')
-		decrypt = raw_input('Would you like to decrypt it? (n) ').lower().strip()
+		#print('The private key found is BIP0038 encrypted.')
+		decrypt = raw_input('Would you like to decrypt your private key? (n) ').lower().strip()
 		if decrypt == 'y':
 			bipPass1 = 'pass1' 
 			bipPass2 = 'pass2'

@@ -9,10 +9,7 @@ Cold storage crypto-currency address generator
 import os.path
 import sys
 
-import encrypt.bip38 as bip38
 import encrypt.database as database
-import io.inp as inp
-import io.get as get
 import io.list as list
 import num.rand as rand
 import system.address as address
@@ -26,8 +23,6 @@ passW = passW()
 if not os.path.isfile('igloo.dat') and not os.path.isfile('iceblock'):
 	passW.setPass()
 	dbCreate.buildDB()
-	#as this is likely a first run, scan for good entropy
-	#rand.platformCheck()	
 
 else:
 	if not os.path.isfile('igloo.dat') and os.path.isfile('iceblock'):
@@ -111,7 +106,7 @@ try:
 			address.generate(command[1])
 			continue
 		
-		#a couple of debugging functions here.
+		#a couple of unit test functions here.
 		#the first generates address and priv keys for all currencies in the system
 		#the second does the same but with BIP38 encryption which it also tests
 		elif command[0].lower() == 'genall':
@@ -129,6 +124,6 @@ try:
 except:
 	#naughty I know but this should ensure that the database gets encrypted if an unforeseen error occurs
 	if str(sys.exc_info()[0]) != '<type \'exceptions.SystemExit\'>':
-		print('An unforseen error occurred. Attempting to encrypt database.')
+		print('An unforeseen error occurred. Attempting to encrypt database.')
 		database.encrypt(passW)
 	sys.exit()

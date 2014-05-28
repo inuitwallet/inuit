@@ -1,18 +1,15 @@
 import binascii
 import hashlib
-import sqlite3
 
 import encrypt.aes as aes
 import encrypt.scrypt as scrypt
-import io.inp as inp
 import num.enc as enc
-import num.rand as rand
 
 
 def encrypt(privK, address, passphrase, p):
-	'''
+	"""
 		BIP0038 private key encryption, Non-EC
-	'''
+	"""
 	
 	print('Calculating BIP0038 encrypted private key...')
 	
@@ -44,6 +41,10 @@ def encrypt(privK, address, passphrase, p):
 	return enc.b58encode(privkey + check)
 	
 def decrypt(encrypted_privkey, passphrase, p):
+	"""
+	decrypt a bip0038 encrypted private key
+	return the key and address hash for adress verification
+	"""
 	
 	print('Decrypting private key...')
 	#1. Collect encrypted private key and passphrase from user.
