@@ -1,6 +1,6 @@
 import imp
-import os
 import sys
+import platform
 
 from ctypes import (cdll,
                     POINTER, pointer,
@@ -9,11 +9,18 @@ from ctypes import (cdll,
                     create_string_buffer)
 
 #Linux
-#_scrypt = cdll.LoadLibrary('_scrypt.so') 
+if 'Linux' in platform.platform():
+	if platform.architecture()[0] == '64bit':
+		_scrypt = cdll.LoadLibrary(imp.find_module('_scrypt_lin_64')[1])
+	else:
+		_scrypt = cdll.LoadLibrary(imp.find_module('_scrypt_lin_x86')[1])
 #Windows
-#_scrypt = cdll.LoadLibrary('_scrypt.pyd')
-#uncompiled
-_scrypt = cdll.LoadLibrary(imp.find_module('_scrypt')[1])
+if 'Windows' in platform.platform():
+	if platform.architecture()[0] == '64bit':
+		_scrypt = cdll.LoadLibrary(imp.find_module('_scrypt_win_64')[1])
+	else:
+		_scrypt = cdll.LoadLibrary(imp.find_module('_scrypt_win_x86')[1])
+#Mac
 
 _scryptenc_buf = _scrypt.exp_scryptenc_buf
 _scryptenc_buf.argtypes = [c_char_p,  # const uint_t  *inbuf
